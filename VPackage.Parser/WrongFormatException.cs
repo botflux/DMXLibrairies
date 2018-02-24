@@ -11,10 +11,16 @@ namespace VPackage.Parser
     /// </summary>
     public class WrongFormatException : Exception
     {
+        #region Constants
+
         /// <summary>
         /// Message par défaut
         /// </summary>
         private const string MESSAGE = "Data not properly formatted";
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Initialise une nouvelle instance de WrongFormatException
@@ -26,5 +32,7 @@ namespace VPackage.Parser
         /// </summary>
         /// <param name="message">Message complémentaire</param>
         public WrongFormatException (string message) : base (string.Format("{0} - {1}", MESSAGE, message)) { }
+
+        #endregion
     }
 }
