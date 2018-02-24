@@ -41,6 +41,18 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="VPackage.Files">
+      <HintPath>..\VPackage.Files\bin\Debug\VPackage.Files.dll</HintPath>
+    </Reference>
+    <Reference Include="VPackage.Json">
+      <HintPath>..\VPackage.Json\bin\Debug\VPackage.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="VPackage.Network">
+      <HintPath>..\VPackage.Network\bin\Debug\VPackage.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="VPackage.Parser">
+      <HintPath>..\VPackage.Parser\bin\Debug\VPackage.Parser.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />

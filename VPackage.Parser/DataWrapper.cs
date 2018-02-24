@@ -5,7 +5,14 @@
     /// </summary>
     public class DataWrapper
     {
+        /// <summary>
+        /// Nom de la donnée
+        /// </summary>
         private string name;
+
+        /// <summary>
+        /// Valeur de la donnée
+        /// </summary>
         private object value;
 
         /// <summary>
@@ -62,7 +69,7 @@
         /// <returns>Chaine de caractère formatter</returns>
         public override string ToString()
         {
-            return string.Format("Name: {0}; Value: {1}", this.name, this.value.ToString());
+            return string.Format("Name: \"{0}\"; Value: \"{1}\"", this.name, this.value.ToString());
         }
 
         public override int GetHashCode()
