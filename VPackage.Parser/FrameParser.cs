@@ -9,6 +9,8 @@ namespace VPackage.Parser
     /// </summary>
     public static class FrameParser
     {
+        #region Fields
+
         /// <summary>
         /// Caractère utilisé pour séparer les valeurs des noms
         /// </summary>
@@ -18,6 +20,10 @@ namespace VPackage.Parser
         /// Caractère utilisé pour séparer les trames
         /// </summary>
         private static char frameSeparator = ';';
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Caractère utilisé pour séparer les valeurs des noms
@@ -50,6 +56,10 @@ namespace VPackage.Parser
                 frameSeparator = value;
             }
         }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Retourne une chaîne de caractères mise en forme avec tous les élèments de la liste
@@ -194,6 +204,9 @@ namespace VPackage.Parser
                 
             return string.Format("{0}{1}{2}", s0, FrameSeparator,s1);
         }
+
+        #endregion
+
     }
 }
 

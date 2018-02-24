@@ -6,12 +6,25 @@ using System.Threading.Tasks;
 
 namespace VPackage.Parser
 {
+    /// <summary>
+    /// Représente les erreurs liées au format de la données encodée
+    /// </summary>
     public class WrongFormatException : Exception
     {
-        private const string message = "Data not properly formatted";
+        /// <summary>
+        /// Message par défaut
+        /// </summary>
+        private const string MESSAGE = "Data not properly formatted";
 
-        public WrongFormatException () : base (message) { }
+        /// <summary>
+        /// Initialise une nouvelle instance de WrongFormatException
+        /// </summary>
+        public WrongFormatException () : base (MESSAGE) { }
 
-        public WrongFormatException (string _message) : base (string.Format("{0} - {1}", message, _message)) { }
+        /// <summary>
+        /// Initialise une nouvelle instance de WrongFormatException
+        /// </summary>
+        /// <param name="message">Message complémentaire</param>
+        public WrongFormatException (string message) : base (string.Format("{0} - {1}", MESSAGE, message)) { }
     }
 }

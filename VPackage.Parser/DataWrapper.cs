@@ -5,6 +5,8 @@
     /// </summary>
     public class DataWrapper
     {
+        #region Fields
+
         /// <summary>
         /// Nom de la donnée
         /// </summary>
@@ -14,6 +16,10 @@
         /// Valeur de la donnée
         /// </summary>
         private object value;
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// Nom de la donnée
@@ -47,6 +53,10 @@
             }
         }
 
+        #endregion
+
+        #region Constructors
+
         /// <summary>
         /// Initialise une nouvelle instance de la structure ParsedData
         /// </summary>
@@ -58,11 +68,15 @@
             this.value = value;
         }
 
+        #endregion
+
+        #region Methods
+
         public override bool Equals(object obj)
         {
             return base.Equals(obj);
         }
-
+        
         /// <summary>
         /// Retourne une chaine de caractère représentant l'instance.
         /// </summary>
@@ -76,5 +90,7 @@
         {
             return base.GetHashCode();
         }
+
+        #endregion
     }
 }
