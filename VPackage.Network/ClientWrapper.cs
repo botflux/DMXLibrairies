@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
 
 namespace VPackage.Network
@@ -12,7 +8,14 @@ namespace VPackage.Network
     /// </summary>
     public class ClientWrapper
     {
+        /// <summary>
+        /// Nom d'hôte du client
+        /// </summary>
         private string hostname;
+
+        /// <summary>
+        /// Port du client
+        /// </summary>
         private string port;
 
         /// <summary>
@@ -47,17 +50,52 @@ namespace VPackage.Network
         /// <summary>
         /// Retourne cette classe sous forme de IPEndPoint
         /// </summary>
-        /// <returns></returns>
+        /// <returns>La terminaison réseau correspondant à cette instance</returns>
+        /// <exception cref="ArgumentNullException">Lever lors ce que le nom d'hôte ou le port n'est pas spécifié</exception>
+        /// <exception cref="FormatException">Lever lors ce que le nom d'hôte ou le port n'a pas le bon format</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Lever lors ce que le port spécifié ne se trouve pas entre 0 et 65 535</exception>
         public IPEndPoint ToIPEndPoint ()
         {
+            IPAddress hostname;
+            int port;
+
             try
             {
-                return new IPEndPoint(IPAddress.Parse(this.hostname), int.Parse(this.port));
+                hostname = IPAddress.Parse(this.hostname);
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw ex;
+            }
+            catch (FormatException ex)
+            {
+                throw ex;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
+
+            try
+            {
+                port = int.Parse(this.port);
+            }
+            catch (ArgumentNullException ex)
+            {
+                throw ex;
+            }
+            catch (FormatException ex)
+            {
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            if (port < IPEndPoint.MinPort || port > IPEndPoint.MaxPort) throw new ArgumentOutOfRangeException("Le port spécifié n'est pas valide");
+
+            return new IPEndPoint(hostname, port);
         }
     }
 }
