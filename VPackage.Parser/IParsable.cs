@@ -2,6 +2,10 @@
 {
     public interface IParsable
     {
+        #region Methods
+
         string Encode();
+
+        #endregion
     }
 }
