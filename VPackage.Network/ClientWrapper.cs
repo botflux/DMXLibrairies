@@ -66,11 +66,11 @@ namespace VPackage.Network
             int translatedPort;
 
             if (!IPAddress.TryParse(hostname, out translatedHostname))
-                throw new FormatException("Le nom d'hôte spécifié n'est pas valide");
+                throw new FormatException(string.Format("Le nom d'hôte: {0} n'est pas valide", hostname));
             if (!int.TryParse(port, out translatedPort))
-                throw new FormatException("Le port spécifié n'est pas valide");
+                throw new FormatException(string.Format("Le port: {0} n'est pas valide", port));
             if (translatedPort < IPEndPoint.MinPort || translatedPort > IPEndPoint.MaxPort)
-                throw new ArgumentOutOfRangeException(string.Format("Le port spécifié ne se trouve pas entre {0} et {1}", IPEndPoint.MinPort, IPEndPoint.MaxPort));
+                throw new ArgumentOutOfRangeException(string.Format("Le port {0} ne se trouve pas entre {1} et {2}", translatedPort, IPEndPoint.MinPort, IPEndPoint.MaxPort));
 
             return new IPEndPoint(translatedHostname, translatedPort);
         }

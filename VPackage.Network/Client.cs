@@ -54,7 +54,7 @@ namespace VPackage.Network
                 throw new ArgumentOutOfRangeException(string.Format("Le port spécifié ne se trouve pas entre {0} et {1}", IPEndPoint.MinPort, IPEndPoint.MaxPort));
             if (!IPAddress.TryParse(hostname, out translatedHostname))
                 throw new FormatException("Le nom d'hote spécifié n'est pas au bon format");
-
+            
             this.EndPoint = new IPEndPoint(translatedHostname, port);
             try
             {
