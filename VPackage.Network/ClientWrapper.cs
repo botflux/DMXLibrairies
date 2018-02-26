@@ -56,46 +56,23 @@ namespace VPackage.Network
         /// <exception cref="ArgumentOutOfRangeException">Lever lors ce que le port spécifié ne se trouve pas entre 0 et 65 535</exception>
         public IPEndPoint ToIPEndPoint ()
         {
-            IPAddress hostname;
-            int port;
+            if (hostname == null || hostname == string.Empty)
+                throw new ArgumentNullException("Le nom d'hôte n'est pas spécifié ou vide");
+            if (port == null || port == string.Empty)
+                throw new ArgumentNullException("Le port n'est pas spécifié ou vide");
 
-            try
-            {
-                hostname = IPAddress.Parse(this.hostname);
-            }
-            catch (ArgumentNullException ex)
-            {
-                throw ex;
-            }
-            catch (FormatException ex)
-            {
-                throw ex;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
 
-            try
-            {
-                port = int.Parse(this.port);
-            }
-            catch (ArgumentNullException ex)
-            {
-                throw ex;
-            }
-            catch (FormatException ex)
-            {
-                throw ex;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            IPAddress translatedHostname;
+            int translatedPort;
 
-            if (port < IPEndPoint.MinPort || port > IPEndPoint.MaxPort) throw new ArgumentOutOfRangeException("Le port spécifié n'est pas valide");
+            if (!IPAddress.TryParse(hostname, out translatedHostname))
+                throw new FormatException("Le nom d'hôte spécifié n'est pas valide");
+            if (!int.TryParse(port, out translatedPort))
+                throw new FormatException("Le port spécifié n'est pas valide");
+            if (translatedPort < IPEndPoint.MinPort || translatedPort > IPEndPoint.MaxPort)
+                throw new ArgumentOutOfRangeException(string.Format("Le port spécifié ne se trouve pas entre {0} et {1}", IPEndPoint.MinPort, IPEndPoint.MaxPort));
 
-            return new IPEndPoint(hostname, port);
+            return new IPEndPoint(translatedHostname, translatedPort);
         }
     }
 }
