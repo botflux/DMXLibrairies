@@ -46,28 +46,21 @@ namespace VPackage.Network
         /// <exception cref="SocketException">Lever lors ce que le socket rencontre un problème</exception>
         public Client (string hostname, int port)
         {
+            IPAddress translatedHostname;
+
+            if (hostname == null || hostname == string.Empty)
+                throw new ArgumentNullException("Le nom d'hôte spécifié est nul ou vide");
+            if (port < IPEndPoint.MinPort || port > IPEndPoint.MaxPort)
+                throw new ArgumentOutOfRangeException(string.Format("Le port spécifié ne se trouve pas entre {0} et {1}", IPEndPoint.MinPort, IPEndPoint.MaxPort));
+            if (!IPAddress.TryParse(hostname, out translatedHostname))
+                throw new FormatException("Le nom d'hote spécifié n'est pas au bon format");
+
+            this.EndPoint = new IPEndPoint(translatedHostname, port);
             try
             {
-                this.EndPoint = new IPEndPoint(IPAddress.Parse(hostname), port);
                 this.udpClient = new UdpClient();
             }
-            catch (ArgumentNullException ex)
-            {
-                throw ex;
-            }
-            catch (FormatException ex)
-            {
-                throw ex;
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                throw ex;
-            }
             catch (SocketException ex)
-            {
-                throw ex;
-            }
-            catch (Exception ex)
             {
                 throw ex;
             }
@@ -83,28 +76,13 @@ namespace VPackage.Network
         /// <exception cref="SocketException">Lever lors ce que le socket rencontre un problème</exception>
         public Client (ClientWrapper wrapper)
         {
+            this.EndPoint = wrapper.ToIPEndPoint();
+
             try
             {
-                this.EndPoint = wrapper.ToIPEndPoint();
                 this.udpClient = new UdpClient();
             }
-            catch (ArgumentNullException ex)
-            {
-                throw ex;
-            }
-            catch (FormatException ex)
-            {
-                throw ex;
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                throw ex;
-            }
             catch (SocketException ex)
-            {
-                throw ex;
-            }
-            catch (Exception ex)
             {
                 throw ex;
             }
