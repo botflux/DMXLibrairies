@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Security;
+﻿using System.IO;
 
 namespace VPackage.Files
 {
@@ -10,53 +8,44 @@ namespace VPackage.Files
     public static class FileManager
     {
         /// <summary>
+        /// Nombre de caractères maximum d'un nom de fichier
+        /// </summary>
+        public const int PATH_MAX_SIZE = 259;
+
+        /// <summary>
+        /// Options d'écriture de fichier
+        /// </summary>
+        public enum WriteOptions
+        {
+            NotCreateDirectory = 0,
+            CreateDirectory = 1
+        };
+
+        /// <summary>
         /// Ecrit dans un fichier, si le fichier existe déjà alors il est remplacé sinon un nouveau est créer;
         /// Le chemin du répertoire doit être créé
         /// </summary>
         /// <param name="path">Chemin d'accès du fichier</param>
-        /// <param name="name">Nom du fichier</param>
         /// <param name="content">Contenu du fichier</param>
+        /// <param name="options">Options d'écriture</param>
         /// <exception cref="DirectoryNotFoundException">Lever lors ce que le chemin d'accès au fichier n'existe pas</exception>
         /// <exception cref="PathTooLongException">Lever lors ce que le chemin d'accès renseigner est trop long</exception>
-        /// <exception cref="UnauthorizedAccessException">Lever lors ce que l'accès au répertoire n'est pas autorisé</exception>
-        /// <exception cref="SecurityException">Lever lors ce que l'application n'a pas l'autorisation requise</exception>
-        public static void Write (string path, string name, string content)
+        public static void Write (string path, string content, WriteOptions options = WriteOptions.NotCreateDirectory)
         {
-            if (path[path.Length - 1] == '\\')
-                path = path.TrimEnd('\\');
 
-            /*
-            if (!Directory.Exists(path))
-            {
-                throw new DirectoryNotFoundException(string.Format("Specified directory not existing: {0}", path));
-            }
-            */
-            string completePath = path + "\\" + name;
+            if (path.Length >= PATH_MAX_SIZE)
+                throw new PathTooLongException("Le chemin d'accès du fichier est trop long");
+            
+            string directoryPath = Path.GetDirectoryName(path);
 
-            try
-            {
-                File.WriteAllText(completePath, content);
-            }
-            catch (PathTooLongException ex)
-            {
-                throw ex;
-            }
-            catch (DirectoryNotFoundException ex)
-            {
-                throw ex;
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                throw ex;
-            }
-            catch (SecurityException ex)
-            {
-                throw ex;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            if (!Directory.Exists(directoryPath))
+                if (options == WriteOptions.NotCreateDirectory)
+                    throw new DirectoryNotFoundException("Le chemin d'accès au fichier n'existe pas");
+                else
+                    Directory.CreateDirectory(directoryPath);
+
+            File.WriteAllText(path, content);
+            
         }
 
         /// <summary>
@@ -66,45 +55,21 @@ namespace VPackage.Files
         /// <returns>Le contenu du fichier sous forme de chaîne de caractères</returns>
         /// <exception cref="PathTooLongException">Lever lors ce que le chemin d'accès au fichier est trop long</exception>
         /// <exception cref="DirectoryNotFoundException">Lever lors ce que le chemin d'accès du repértoire n'existe pas</exception>
-        /// <exception cref="UnauthorizedAccessException">Lever lors ce que le chemin d'accès au fichier n'existe pas</exception>
-        /// <exception cref="SecurityException">Lever lors ce que l'application n'a pas l'autorisation d'accèder à ce fichier</exception>
+        /// <exception cref="FileNotFoundException">Lever lors ce que le fichier n'est pas trouvé</exception>
         public static string Read (string path)
         {
-            /*
+            if (path.Length >= PATH_MAX_SIZE)
+                throw new PathTooLongException("Le chemin spécifié est trop long");
+            
+            string directoryPath = Path.GetDirectoryName(path);
+            
+            if (!Directory.Exists(directoryPath))
+                throw new DirectoryNotFoundException("Le chemin du repértoire spécifié n'existe pas");
             if (!File.Exists(path))
-            {
-                throw new FileNotFoundException(string.Format("File not found: {0}", path));
-            }
-            */
+                throw new FileNotFoundException("Le chemin du fichier spécifié n'existe pas");
 
-            try
-            {
-                return File.ReadAllText(path);
-            }
-            catch(PathTooLongException ex)
-            {
-                throw ex;
-            }
-            catch (DirectoryNotFoundException ex)
-            {
-                throw ex;
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                throw ex;
-            }
-            catch (FileNotFoundException ex)
-            {
-                throw ex;
-            }
-            catch (SecurityException ex)
-            {
-                throw ex;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return File.ReadAllText(path);
+
         }
     }
 }
