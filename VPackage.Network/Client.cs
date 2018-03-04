@@ -8,6 +8,7 @@ namespace VPackage.Network
     /// <summary>
     /// Représente un Client UDP
     /// </summary>
+    [Obsolete("Utilisé la classe NetworkManager", false)]
     public class Client
     {
         /// <summary>

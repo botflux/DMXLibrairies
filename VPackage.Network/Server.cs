@@ -10,6 +10,7 @@ namespace VPackage.Network
     /// <summary>
     /// Représente un Serveur UDP
     /// </summary>
+    [Obsolete("Utilisé la classe NetworkManager", false)]
     public class Server
     {
         /// <summary>

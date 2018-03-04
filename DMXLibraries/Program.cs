@@ -8,24 +8,38 @@ using VPackage.Parser;
 using VPackage.Network;
 using VPackage.Files;
 
+using System.Net;
+
 using System.IO;
 
 namespace DMXLibraries
 {
     class Program
     {
-        const string FILE_NAME = @"c:\mes_tests\sous-dossier";
-
         static void Main(string[] args)
         {
-            try
+            Console.WriteLine("DMXLib");
+
+            NetworkManager networkManager = new NetworkManager("127.0.0.1", 5000, 12000, 5641);
+
+            networkManager.OnMessageReceived += (message) =>
             {
-                FileManager.Write(FILE_NAME + @"\test.txt", "Hello world", FileManager.WriteOptions.CreateDirectory);
-            }
-            catch (Exception ex)
+                Console.WriteLine("Message recu: {0}", message);
+            };
+
+            networkManager.StartListening();
+
+            do
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Message: ");
+
+                string message = Console.ReadLine();
+                networkManager.Send(message);
+
+                Console.WriteLine("Continuer? (O/N)");
             }
+            while (Console.ReadKey().Key == ConsoleKey.O);
+
             Console.ReadKey();
         }
     }
