@@ -23,8 +23,12 @@ namespace VPackage.Json
         /// <returns>L'objet sous forme de trame JSON</returns>
         /// <exception cref="AttributeMissingException">Lever lors ce que le type renseigné n'implémente pas DataContractAttribute</exception>
         /// <exception cref="QuotaExceededException">Lever lors ce que l'objet à sérialiser est trop volumineux</exception>
+        /// <exception cref="ArgumentNullException">Lever lors ce que l'obbjet à sérialiser est nul</exception>
         public static string Serialize<T>(T o) where T : new ()
         {
+            if (o == null)
+                throw new ArgumentNullException("L'objet passée en paramètre est nul");
+
             Attribute attrs = Attribute.GetCustomAttribute(typeof(T), typeof(DataContractAttribute));
 
             if (attrs == null)
@@ -57,8 +61,13 @@ namespace VPackage.Json
         /// <param name="content">Chaîne à déserialiser</param>
         /// <returns>L'objet désérialisé</returns>
         /// <exception cref="AttributeMissingException">Lever lors ce que le type renseigné n'implémente pas DataContractAttribute</exception>
+        /// <exception cref="ArgumentNullException">Lever lors ce que le contenu est nul ou vide</exception>
         public static T Deserialize<T> (string content) where T : new()
         {
+            if (string.IsNullOrEmpty(content))
+                throw new ArgumentNullException("Le contenu renseigné est nul ou vide");
+
+
             Attribute attrs = Attribute.GetCustomAttribute(typeof(T), typeof(DataContractAttribute));
 
             if (attrs == null)
