@@ -69,6 +69,9 @@ namespace VPackage.Parser
         /// <exception cref="ArgumentNullException">Lever lors ce que le tableau passé en paramètre est nul</exception>
         public static string Encode(List<DataWrapper> list)
         {
+            if (list == null)
+                throw new ArgumentNullException("La liste passée en paramètre est nul");
+
             return Encode(list.ToArray());
         }
 

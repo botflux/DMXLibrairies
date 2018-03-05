@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using System.Collections.Generic;
 using VPackage.Parser;
 
 namespace VPackage.Parser.Test
@@ -112,7 +112,89 @@ namespace VPackage.Parser.Test
 
             string actual = FrameParser.Encode(nom, value);
         }
+
+        /// <summary>
+        /// Cas: Le datawrapper est correcte
+        /// Renvoie: Le datagramme encodé
+        /// </summary>
+        [TestMethod]
+        public void Encode_RightDataWrapper_EncodedFrame ()
+        {
+            string frame = FrameParser.Encode(new DataWrapper("blue", 200));
+
+            Assert.AreEqual("BLUE=200", frame);
+        }
+        
+        /// <summary>
+        /// Cas: Le datawrapper est null
+        /// Renvoie: ArgumentNullException
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Encode_DataWrapperNull_ArgumentNullException ()
+        {
+            DataWrapper dw = null;
+            FrameParser.Encode(dw);
+        }
+
+        /// <summary>
+        /// Cas: La liste datawrapper est null
+        /// Renvoie: ArgumentNullException
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Encode_DataWrapperListNull_ArgumentNullException()
+        {
+            System.Collections.Generic.List<DataWrapper> dw = null;
+            FrameParser.Encode(dw);
+        }
+
+        /// <summary>
+        /// Cas: Le tableau datawrapper est null
+        /// Renvoie: ArgumentNullException
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Encode_DataWrapperArrayNull_ArgumentNullException()
+        {
+            DataWrapper[] dw = null;
+            FrameParser.Encode(dw);
+        }
+
+        /// <summary>
+        /// Cas: Le tableau datawrapper est correcte
+        /// Renvoie: La trame encodée
+        /// </summary>
+        [TestMethod]
+        public void Encode_RightDataWrapperArray_EncodedFrame()
+        {
+            DataWrapper[] dw = new DataWrapper[] {
+                new DataWrapper("BLUE", 200),
+                new DataWrapper("RED", 120)
+            };
+            string frame = FrameParser.Encode(dw);
+            Assert.AreEqual("BLUE=200;RED=120", frame);
+        }
+
+        /// <summary>
+        /// Cas: La liste datawrapper est correcte
+        /// Renvoie: La trame encodée
+        /// </summary>
+        [TestMethod]
+        public void Encode_RightDataWrapperList_ArgumentNullException()
+        {
+            System.Collections.Generic.List<DataWrapper> dw = new System.Collections.Generic.List<DataWrapper>()
+            {
+                new DataWrapper("BLUE", 200),
+                new DataWrapper("RED", 120)
+            };
+            string frame = FrameParser.Encode(dw);
+            Assert.AreEqual("BLUE=200;RED=120", frame);
+        }
+
         #endregion
+
+        #region Decode test
 
         /// <summary>
         /// Cas: La valeur et le nom sont correcte
@@ -128,6 +210,32 @@ namespace VPackage.Parser.Test
             Assert.IsTrue(actual.Name == "BLUE" && actual.Value.ToString() == "200");
         }
 
+        /// <summary>
+        /// Cas: La trame est null
+        /// Renvoie: ArgumentNullException
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Decode_NullFrame_ArgumentNullException ()
+        {
+            FrameParser.Decode(null);
+        }
+
+        /// <summary>
+        /// Cas: La trame est vide
+        /// Renvoie: ArgumentNullException
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Decode_EmptyFrame_ArgumentNullException()
+        {
+            FrameParser.Decode("");
+        }
+
+        /// <summary>
+        /// Cas: La trame ne contient pas de séparateur nom/valeur
+        /// Renvoie: WrongFormatException
+        /// </summary>
         [TestMethod]
         [ExpectedException(typeof(WrongFormatException))]
         public void Decode_NoValueNameSeparator_WrongFormatException ()
@@ -137,5 +245,116 @@ namespace VPackage.Parser.Test
             DataWrapper actual = FrameParser.Decode(frame);
 
         }
+        #endregion
+
+        #region Merge test
+        /// <summary>
+        /// Cas: Les deux trames sont correctes
+        /// Renvoie: Les deux trames assemblées
+        /// </summary>
+        [TestMethod]
+        public void Merge_RightParameters_MergedFrame ()
+        {
+            string s0 = "BLUE=210";
+            string s1 = "RED=120";
+
+            string merged = FrameParser.Merge(s0, s1);
+
+            Assert.AreEqual("BLUE=210;RED=120", merged);
+        }
+
+        /// <summary>
+        /// Cas: Le premier paramètre est null
+        /// Renvoie: ArgumentNullException
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Merge_S0Wrong_ArgumentNullException()
+        {
+            string s0 = null;
+            string s1 = "RED=120";
+
+            FrameParser.Merge(s0, s1);
+        }
+
+        /// <summary>
+        /// Cas: Le second paramètre est null
+        /// Renvoie: ArgumentNullException
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Merge_S1Wrong_ArgumentNullException()
+        {
+            string s1 = null;
+            string s0 = "RED=120";
+
+            FrameParser.Merge(s0, s1);
+        }
+        #endregion
+
+        #region DecodeArray test
+        /// <summary>
+        /// Cas: La trame est correcte
+        /// Renvoie: La trame désencodée
+        /// </summary>
+        [TestMethod]
+        public void DecodeArray_RightFrame_DecodedFrame ()
+        {
+            string frame = "RED=120;BLUE=100";
+
+            List<DataWrapper> dws = FrameParser.DecodeArray(frame);
+            List<DataWrapper> excepted = new List<DataWrapper>()
+            {
+                new DataWrapper("RED", 120),
+                new DataWrapper("BLUE", 100)
+            };
+
+            bool actual = true;
+
+            for (int i = 0; i < dws.Count; i++)
+            {
+                if (dws[i].Name != excepted[i].Name || 
+                    dws[i].Value.ToString() != excepted[i].Value.ToString())
+                {
+                    actual = false;
+                }
+            }
+
+            Assert.IsTrue(actual);
+        }
+
+        /// <summary>
+        /// Cas: La trame encodée est nulle
+        /// Renvoie: ArgumentNullException
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DecodeArray_NullFrame_ArgumentNullException ()
+        {
+            FrameParser.DecodeArray(null);
+        }
+
+        /// <summary>
+        /// Cas: La trame encodée est vide
+        /// Renvoie: ArgumentNullException
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void DecodeArray_EmptyFrame_ArgumentNullException()
+        {
+            FrameParser.DecodeArray(string.Empty);
+        }
+
+        /// <summary>
+        /// Cas: La trame contient trop de séparateur de trame
+        /// Renvoie: WrongFormatException
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(WrongFormatException))]
+        public void DecodeArray_FrameContainsTooMuchSepator_WrongFormatException()
+        {
+            FrameParser.DecodeArray("RED=120;BLUE=100;");
+        }
+        #endregion
     }
 }
