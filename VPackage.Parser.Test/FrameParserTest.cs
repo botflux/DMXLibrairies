@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using VPackage.Parser;
 
-namespace AppTest
+namespace VPackage.Parser.Test
 {
     [TestClass]
     public class FrameParserTest

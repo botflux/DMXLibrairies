@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VPackage.Network", "VPackag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VPackage.Parser", "VPackage.Parser\VPackage.Parser.csproj", "{7F3EA5C5-8111-460F-B1D5-15FF51912F16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppTest", "AppTest\AppTest.csproj", "{D595D6DA-0409-40C3-A2F2-59393427FC52}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VPackage.Parser.Test", "VPackage.Parser.Test\VPackage.Parser.Test.csproj", "{D595D6DA-0409-40C3-A2F2-59393427FC52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
