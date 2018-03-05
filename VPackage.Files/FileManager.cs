@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System;
 
 namespace VPackage.Files
 {
@@ -30,8 +31,15 @@ namespace VPackage.Files
         /// <param name="options">Options d'écriture</param>
         /// <exception cref="DirectoryNotFoundException">Lever lors ce que le chemin d'accès au fichier n'existe pas</exception>
         /// <exception cref="PathTooLongException">Lever lors ce que le chemin d'accès renseigner est trop long</exception>
+        /// <exception cref="ArgumentNullException">Lever lors ce que le chemin ou le contenu est nul</exception>
         public static void Write (string path, string content, WriteOptions options = WriteOptions.NotCreateDirectory)
         {
+
+            if (string.IsNullOrEmpty(path))
+                throw new ArgumentNullException("Le chemin spécifié est nul");
+
+            if (content == null)
+                throw new ArgumentNullException("Le contenu est nul");
 
             if (path.Length >= PATH_MAX_SIZE)
                 throw new PathTooLongException("Le chemin d'accès du fichier est trop long");
@@ -56,13 +64,17 @@ namespace VPackage.Files
         /// <exception cref="PathTooLongException">Lever lors ce que le chemin d'accès au fichier est trop long</exception>
         /// <exception cref="DirectoryNotFoundException">Lever lors ce que le chemin d'accès du repértoire n'existe pas</exception>
         /// <exception cref="FileNotFoundException">Lever lors ce que le fichier n'est pas trouvé</exception>
+        /// <exception cref="ArgumentNullException">Lever lors ce que le chemin est nul ou vide</exception>
         public static string Read (string path)
         {
+            if (path == null || path == string.Empty)
+                throw new ArgumentNullException("Le chemin spécfié est null ou vide");
+
             if (path.Length >= PATH_MAX_SIZE)
                 throw new PathTooLongException("Le chemin spécifié est trop long");
             
             string directoryPath = Path.GetDirectoryName(path);
-            
+
             if (!Directory.Exists(directoryPath))
                 throw new DirectoryNotFoundException("Le chemin du repértoire spécifié n'existe pas");
             if (!File.Exists(path))
