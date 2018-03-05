@@ -18,6 +18,20 @@ namespace DMXLibraries
     {
         static void Main(string[] args)
         {
+            string frame = "BLUE=200";
+
+            DataWrapper dw = FrameParser.Decode(frame);
+
+            Console.WriteLine(dw.ToString());
+
+
+            Console.ReadKey();
+        }
+    }
+}
+
+/*
+            // Test NetworkManager
             Console.WriteLine("DMXLib");
 
             NetworkManager networkManager = new NetworkManager("127.0.0.1", 5000, 12000, 5641);
@@ -39,8 +53,4 @@ namespace DMXLibraries
                 Console.WriteLine("Continuer? (O/N)");
             }
             while (Console.ReadKey().Key == ConsoleKey.O);
-
-            Console.ReadKey();
-        }
-    }
-}
+            */

@@ -106,12 +106,15 @@ namespace VPackage.Parser
         /// <exception cref="ArgumentNullException">Lever lors ce qu'un des paramètre est nul</exception>
         public static string Encode(string name, object value)
         {
+            if (value == null)
+                throw new ArgumentNullException("La valeur passée en paramètre est nul");
+
             string strValue = value.ToString();
 
             if (name == null || name == string.Empty)
                 throw new ArgumentNullException("La valeur passé pour le nom est nul");
-            if (strValue == null || name == string.Empty)
-                throw new ArgumentNullException("La valeur passé pour la valeur est nul");
+            if (strValue == string.Empty)
+                throw new ArgumentNullException("La valeur passé pour la valeur est vide");
                
             if (strValue.Contains(FrameSeparator) || strValue.Contains(NameValueSeparator))
                 throw new ValueContentException("La valeur utilisée contient un caractère de séparation");

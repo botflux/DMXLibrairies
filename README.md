@@ -2,4 +2,4 @@
 
 ## TODO:
 
-* Gestion des exceptions d'accès au fichier sur l'assembly VPackage.FileManager
+* Unit test
