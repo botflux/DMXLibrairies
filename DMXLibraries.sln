@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VPackage.Files.Test", "VPac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VPackage.Json.Test", "VPackage.Json.Test\VPackage.Json.Test.csproj", "{E8343D4A-EF97-4CF7-8952-8EF4F3FF42FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VPackage.Network.Test", "VPackage.Network.Test\VPackage.Network.Test.csproj", "{728AEC0E-91D7-49C6-A72F-5944125099EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{E8343D4A-EF97-4CF7-8952-8EF4F3FF42FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8343D4A-EF97-4CF7-8952-8EF4F3FF42FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8343D4A-EF97-4CF7-8952-8EF4F3FF42FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{728AEC0E-91D7-49C6-A72F-5944125099EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{728AEC0E-91D7-49C6-A72F-5944125099EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{728AEC0E-91D7-49C6-A72F-5944125099EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{728AEC0E-91D7-49C6-A72F-5944125099EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
