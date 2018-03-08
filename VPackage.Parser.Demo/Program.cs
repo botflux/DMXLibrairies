@@ -10,7 +10,7 @@ namespace VPackage.Parser.Demo
     class Program
     {
         static void Main(string[] args)
-        { 
+        {  
             do
             {
                 Console.WriteLine("Choisir option: \n1: Construire\n2: Déconstuire");
