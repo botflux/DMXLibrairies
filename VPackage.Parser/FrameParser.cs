@@ -203,12 +203,22 @@ namespace VPackage.Parser
         /// <exception cref="ArgumentNullException">Un des paramètre est nul ou vide</exception>
         public static string Merge (string s0, string s1)
         {
-            if (s0 == null || s0 == string.Empty)
+            if (s0 == null)
                 throw new ArgumentNullException("La première chaîne de caractères passée est nul ou vide");
-            if (s1 == null || s1 == string.Empty)
+            if (s1 == null)
                 throw new ArgumentNullException("La seconde chaîne de caractères passée est nul ou vide");
                 
-            return string.Format("{0}{1}{2}", s0, FrameSeparator,s1);
+
+
+            string merged = string.Format("{0}{1}{2}", s0, FrameSeparator,s1);
+
+            if (merged[merged.Length - 1] == FrameSeparator)
+                merged = merged.TrimEnd(FrameSeparator);
+
+            if (merged[0] == FrameSeparator)
+                merged = merged.TrimStart(FrameSeparator);
+
+            return merged;
         }
 
         #endregion

@@ -305,6 +305,28 @@ namespace VPackage.Parser.Test
 
             FrameParser.Merge(s0, s1);
         }
+        
+        [TestMethod]
+        public void Merge_S0Empty_EncodedFrame ()
+        {
+            string s0 = "";
+            string s1 = "RED=120";
+
+            string merged = FrameParser.Merge(s0, s1);
+
+            Assert.AreEqual(s1, merged);
+        }
+
+        [TestMethod]
+        public void Merge_S1Empty_EncodedFrame ()
+        {
+            string s0 = "RED=120";
+            string s1 = "";
+
+            string merged = FrameParser.Merge(s0, s1);
+
+            Assert.AreEqual(s0, merged);
+        }
         #endregion
          
         #region DecodeArray test
