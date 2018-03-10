@@ -306,7 +306,7 @@ namespace VPackage.Parser.Test
             FrameParser.Merge(s0, s1);
         }
         #endregion
-
+         
         #region DecodeArray test
         /// <summary>
         /// Cas: La trame est correcte
