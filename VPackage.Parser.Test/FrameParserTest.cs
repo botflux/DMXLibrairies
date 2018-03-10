@@ -192,6 +192,21 @@ namespace VPackage.Parser.Test
             Assert.AreEqual("BLUE=200;RED=120", frame);
         }
 
+        /// <summary>
+        /// Cas: Le tableau ne contient qu'un élément
+        /// Renvoie: La trame encodée
+        /// </summary>
+        [TestMethod]
+        public void Encode_ArrayWithOneElement_EncodedFrame ()
+        {
+            string excepted = "BLUE=100";
+            DataWrapper[] dws = new DataWrapper[] { new DataWrapper("BLUE", 100) };
+
+            string actual = FrameParser.Encode(dws);
+
+            Assert.AreEqual(excepted, actual);
+        }
+
         #endregion
 
         #region Decode test
