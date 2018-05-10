@@ -11,7 +11,7 @@ namespace VPackage.Network
 {
     public class NetworkManager
     {
-        const int MTU = 1450;
+        const int MTU = 5;
 
         /// <summary>
         /// Client udp
@@ -29,6 +29,8 @@ namespace VPackage.Network
         /// Renseigne si l'écoute doit être arreter ou pas
         /// </summary>
         private bool stopListening;
+
+        private Queue<DatagramPacket> packetBuffer = new Queue<DatagramPacket>();
 
         /// <summary>
         /// Renseigne ou renvoie le point de terminaison de reception
@@ -122,33 +124,107 @@ namespace VPackage.Network
 
             byte[] receiveBytes = u.EndReceive(ar, ref e);
             string receiveString = Encoding.ASCII.GetString(receiveBytes);
+            /*
+            DatagramPacket datagram = JSONSerializer.Deserialize<DatagramPacket>(receiveString);
+            if (datagram.IsFragmented)
+            {
+                packetBuffer.Enqueue(datagram);
+                if (datagram.Index == datagram.PacketCount - 1)
+                {
+                    string message = "";
 
+                    foreach (DatagramPacket packet in packetBuffer)
+                    {
+                        message += packet.Data;    
+                    }
 
+                    OnMessageReceived?.Invoke(message);
+                }
+            }
+            else
+            {
+                if (OnMessageReceived != null) OnMessageReceived(datagram.Data);
+            }
+            */
             if (OnMessageReceived != null) OnMessageReceived(receiveString);
 
             if (!stopListening)
                 StartListening();
         }
         
+        public void SendFragmented (string message)
+        {
+            // déduit le nombre de paquets qu'il y aura
+            int packetCount = message.Length / MTU;
+            // déduit le nombre de charactères restant
+            int lastPacketSize = message.Length % MTU;
+
+            // si il reste des charactères restant il faut compter un nouveau paquet qui ne sera pas plein
+            packetCount += (lastPacketSize != 0) ? 1 : 0;
+
+            if (packetCount > 1)
+            {
+                Queue<string> data = new Queue<string>();
+                for (int i = 0; i < packetCount; i++)
+                {
+                    int start = i * MTU;
+                    int length = (i + 1) * MTU;
+                    data.Enqueue(message.Substring(start, length));
+                }
+                
+            }
+
+            Console.WriteLine("{0}; {1}", packetCount, lastPacketSize);
+        }
+
         public void Send(string message)
         {
-            byte[] bytes = Encoding.ASCII.GetBytes(message);
-            int byteCount = bytes.Length;
+
+            byte[] bs = Encoding.ASCII.GetBytes(message);
+            int bc = bs.Length;
+            udpClient.Send(bs, bc, sendEndPoint);
+
+            /*
+             
+             int messageLength = message.Length;
 
             List<string> data = new List<string>();
             
-            if (byteCount > MTU)
+            if (messageLength > MTU)
             {
-                int packetCount = byteCount / MTU;
-                int lastByteCount = byteCount % MTU;
+                int packetCount = messageLength / MTU;
+                int lastByteCount = messageLength % MTU;
 
-                for (int i = 0; i < packetCount; i++)
+                Console.WriteLine("{0} packets, {1} bytes", packetCount, lastByteCount);
+
+                for (int i = 0; i < packetCount - 1; i++)
                 {
-                    if (i * MTU < byteCount && (i + 1) * MTU < byteCount)
-                    data.Add(message.Substring(i * MTU, (i + 1) * MTU));
+                    int offset = i * MTU;
+                    int offsetEnd = (i + 1) * MTU;
+                    Console.WriteLine("Offset: {0} / OffsetEnd: {1} /  Added: {2} / Length: {3}", offset, offsetEnd, (offset + offsetEnd),messageLength);
+
+                    try
+                    {
+                        if (offset < messageLength && offsetEnd < messageLength)
+                            data.Add(message.Substring(offset, offsetEnd - 1));
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.Message + " A");
+                    }
                 }
 
-                data.Add(message.Substring((packetCount - 1) * MTU, (packetCount - 1) * MTU + lastByteCount));
+                //Console.WriteLine("Offset: {0} / End: {1} / Length: {2}", (packetCount - 1) * MTU, (packetCount - 1) * MTU + lastByteCount, messageLength);
+                Console.WriteLine("Offset: {0} / End: {1} / Length: {2}", (packetCount - 2) * MTU, messageLength - 1, messageLength);
+                try
+                {
+                    data.Add(message.Substring((packetCount - 2) * MTU, messageLength));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message + " B");
+                }
+
 
                 for (int i = 0; i < data.Count; i++)
                 {
@@ -178,7 +254,7 @@ namespace VPackage.Network
                 int bc = bs.Length;
                 udpClient.Send(bs, bc, sendEndPoint);
             }
-
+             */
         }
 
         [DataContract]
