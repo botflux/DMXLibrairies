@@ -4,11 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Serialization;
+using VPackage.Json;
 
 namespace VPackage.Network
 {
     public class NetworkManager
     {
+        const int MTU = 1450;
+
         /// <summary>
         /// Client udp
         /// </summary>
@@ -119,6 +123,7 @@ namespace VPackage.Network
             byte[] receiveBytes = u.EndReceive(ar, ref e);
             string receiveString = Encoding.ASCII.GetString(receiveBytes);
 
+
             if (OnMessageReceived != null) OnMessageReceived(receiveString);
 
             if (!stopListening)
@@ -130,7 +135,68 @@ namespace VPackage.Network
             byte[] bytes = Encoding.ASCII.GetBytes(message);
             int byteCount = bytes.Length;
 
-            udpClient.Send(bytes, byteCount, sendEndPoint);
+            List<string> data = new List<string>();
+            
+            if (byteCount > MTU)
+            {
+                int packetCount = byteCount / MTU;
+                int lastByteCount = byteCount % MTU;
+
+                for (int i = 0; i < packetCount; i++)
+                {
+                    if (i * MTU < byteCount && (i + 1) * MTU < byteCount)
+                    data.Add(message.Substring(i * MTU, (i + 1) * MTU));
+                }
+
+                data.Add(message.Substring((packetCount - 1) * MTU, (packetCount - 1) * MTU + lastByteCount));
+
+                for (int i = 0; i < data.Count; i++)
+                {
+                    DatagramPacket packet = new DatagramPacket()
+                    {
+                        Index = i,
+                        IsFragmented = true,
+                        Data = data[i],
+                        PacketCount = data.Count
+                    };
+
+                    byte[] bs = Encoding.ASCII.GetBytes(JSONSerializer.Serialize<DatagramPacket>(packet));
+                    udpClient.Send(bs, bs.Length, sendEndPoint);
+                }
+            }
+            else
+            {
+                DatagramPacket packet = new DatagramPacket()
+                {
+                    Index = -1,
+                    PacketCount = -1,
+                    IsFragmented = false,
+                    Data = message
+                };
+
+                byte[] bs = Encoding.ASCII.GetBytes(JSONSerializer.Serialize<DatagramPacket>(packet));
+                int bc = bs.Length;
+                udpClient.Send(bs, bc, sendEndPoint);
+            }
+
+        }
+
+        [DataContract]
+        private class DatagramPacket
+        {
+            [DataMember]
+            private bool isFragmented;
+            [DataMember]
+            private int index;
+            [DataMember]
+            private int packetCount;
+            [DataMember]
+            private string data;
+
+            public string Data { get => data; set => data = value; }
+            public int PacketCount { get => packetCount; set => packetCount = value; }
+            public int Index { get => index; set => index = value; }
+            public bool IsFragmented { get => isFragmented; set => isFragmented = value; }
         }
     }
 }
