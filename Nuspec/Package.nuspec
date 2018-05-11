@@ -6,22 +6,18 @@
     <authors>victor.mendele</authors>
     <owners>victor.mendele</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Package description</description>
+    <description>JSON Serialization Solution</description>
     <releaseNotes>First package release</releaseNotes>
     <copyright>Copyright 2018</copyright>
-    <tags>Tag1 Tag2</tags>
-    <dependencies>
-      <dependency id="SampleDependency" version="1.0" />
-    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System" />
+      <frameworkAssembly assemblyName="System.IO" />
+      <frameworkAssembly assemblyName="System.Runtime.Serialization.Json" />
+      <frameworkAssembly assemblyName="System.Runtime.Serialization" />
+      <frameworkAssembly assemblyName="System.ServiceModel" />
+    </frameworkAssemblies>
   </metadata>
   <files>
-    <file src="..\VPackage.Json\bin\Debug\VPackage.Json.dll" target="VPackage.Json" />
+    <file src="..\VPackage.Json\bin\Debug\VPackage.Json.dll" target="lib" />
   </files>
-  <frameworkAssemblies>
-    <frameworkAssembly assemblyName="System" />
-    <frameworkAssembly assemblyName="System.IO" />
-    <frameworkAssembly assemblyName="System.Runtime.Serialization.Json" />
-    <frameworkAssembly assemblyName="System.Runtime.Serialization" />
-    <frameworkAssembly assemblyName="System.ServiceModel" />
-  </frameworkAssemblies>
 </package>
