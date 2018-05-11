@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using VPackage.Parser;
 using VPackage.Network;
 using VPackage.Files;
+using VPackage.Json;
 
 using System.Net;
 
 using System.IO;
+using System.Runtime.Serialization;
 
 namespace DMXLibraries
 {
@@ -18,14 +20,46 @@ namespace DMXLibraries
     {
         static void Main(string[] args)
         {
-            string frame = "BLUE=200";
+            Packet p = new Packet();
+            string json = JSONSerializer.Serialize<Packet>(p);
 
-            DataWrapper dw = FrameParser.Decode(frame);
+            NetworkManager networkManager = new NetworkManager("10.129.22.26", 5000, 15000, 15000);
 
-            Console.WriteLine(dw.ToString());
+            networkManager.OnMessageReceived += (message) =>
+            {
+                Console.WriteLine("Message recu: {0}", message);
+            };
+            networkManager.StartListening();
 
+            do
+            {
+                Console.WriteLine("Message: ");
+
+                string message = Console.ReadLine();
+                networkManager.Send(json);
+
+                Console.WriteLine("Continuer? (O/N)");
+            }
+            while (Console.ReadKey().Key == ConsoleKey.O);
 
             Console.ReadKey();
+        }
+
+        [DataContract]
+        public class Packet
+        {
+            [DataMember]
+            public string CIBLE = "PROJO";
+            [DataMember]
+            private string ADDRCIBLE = "1";
+            [DataMember]
+            private string RED = "0";
+            [DataMember]
+            private string GREEN = "10";
+            [DataMember]
+            private string BLUE = "255";
+            [DataMember]
+            private string INTENSITY = "255";
         }
     }
 }

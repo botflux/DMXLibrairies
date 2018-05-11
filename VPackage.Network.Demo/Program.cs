@@ -22,7 +22,7 @@ namespace VPackage.Network.Demo
                 Console.WriteLine("Entrer un message?");
                 string message = Console.ReadLine();
                 
-                client.Send(message);
+                //client.Send(message);
                 client.SendFragmented(message);
                 Console.WriteLine("Espace pour continuer...");
             }

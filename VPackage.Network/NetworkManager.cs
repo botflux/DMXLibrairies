@@ -11,7 +11,7 @@ namespace VPackage.Network
 {
     public class NetworkManager
     {
-        const int MTU = 5;
+        const int MTU = 1200;
 
         /// <summary>
         /// Client udp
@@ -124,29 +124,28 @@ namespace VPackage.Network
 
             byte[] receiveBytes = u.EndReceive(ar, ref e);
             string receiveString = Encoding.ASCII.GetString(receiveBytes);
-            /*
-            DatagramPacket datagram = JSONSerializer.Deserialize<DatagramPacket>(receiveString);
-            if (datagram.IsFragmented)
+
+            DatagramPacket p = JSONSerializer.Deserialize<DatagramPacket>(receiveString);
+            if (p.IsFragmented)
             {
-                packetBuffer.Enqueue(datagram);
-                if (datagram.Index == datagram.PacketCount - 1)
+                packetBuffer.Enqueue(p);
+
+                if (p.Index == p.PacketCount - 1)
                 {
-                    string message = "";
-
-                    foreach (DatagramPacket packet in packetBuffer)
+                    string fullMessage = "";
+                    while(packetBuffer.Count > 0)
                     {
-                        message += packet.Data;    
+                        fullMessage += packetBuffer.Dequeue().Data;
                     }
-
-                    OnMessageReceived?.Invoke(message);
+                    OnMessageReceived?.Invoke(fullMessage);
                 }
             }
             else
             {
-                if (OnMessageReceived != null) OnMessageReceived(datagram.Data);
+                OnMessageReceived?.Invoke(p.Data);
             }
-            */
-            if (OnMessageReceived != null) OnMessageReceived(receiveString);
+
+            //if (OnMessageReceived != null) OnMessageReceived(receiveString);
 
             if (!stopListening)
                 StartListening();
@@ -160,18 +159,53 @@ namespace VPackage.Network
             int lastPacketSize = message.Length % MTU;
 
             // si il reste des charactères restant il faut compter un nouveau paquet qui ne sera pas plein
-            packetCount += (lastPacketSize != 0) ? 1 : 0;
+            //packetCount += (lastPacketSize != 0) ? 1 : 0;
 
             if (packetCount > 1)
             {
-                Queue<string> data = new Queue<string>();
+                List<string> buffer = new List<string>();
                 for (int i = 0; i < packetCount; i++)
                 {
                     int start = i * MTU;
-                    int length = (i + 1) * MTU;
-                    data.Enqueue(message.Substring(start, length));
+                    int length = MTU;
+
+                    buffer.Add(message.Substring(start, length));
+                }
+
+                buffer.Add(message.Substring(MTU * packetCount, message.Length - (MTU * packetCount)));
+                // ajoute le packet restant si il y a un reste
+                packetCount += (lastPacketSize != 0) ? 1 : 0;
+
+                for (int i = 0; i < buffer.Count; i++)
+                {
+                    DatagramPacket p = new DatagramPacket()
+                    {
+                        Data = buffer[i],
+                        Index = i,
+                        IsFragmented = true,
+                        PacketCount = packetCount
+                    };
+
+                    string json = JSONSerializer.Serialize<DatagramPacket>(p);
+                    byte[] bs = Encoding.ASCII.GetBytes(json);
+                    int bc = bs.Length;
+                    udpClient.Send(bs, bc, sendEndPoint);
                 }
                 
+            }
+            else
+            {
+                DatagramPacket dp = new DatagramPacket()
+                {
+                    Index = -1,
+                    PacketCount = -1,
+                    IsFragmented = false,
+                    Data = message
+                };
+
+                byte[] bs = Encoding.ASCII.GetBytes(JSONSerializer.Serialize<DatagramPacket>(dp));
+                int bc = bs.Length;
+                udpClient.Send(bs, bc, SendEndPoint);
             }
 
             Console.WriteLine("{0}; {1}", packetCount, lastPacketSize);
@@ -269,10 +303,10 @@ namespace VPackage.Network
             [DataMember]
             private string data;
 
-            public string Data { get => data; set => data = value; }
-            public int PacketCount { get => packetCount; set => packetCount = value; }
-            public int Index { get => index; set => index = value; }
-            public bool IsFragmented { get => isFragmented; set => isFragmented = value; }
+            public string Data { get { return data; } set { data = value; } }
+            public int PacketCount { get { return packetCount; } set { packetCount = value; } }
+            public int Index { get { return index; } set { index = value; } }
+            public bool IsFragmented { get { return isFragmented; } set { isFragmented = value; } }
         }
     }
 }
