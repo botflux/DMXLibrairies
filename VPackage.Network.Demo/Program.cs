@@ -12,6 +12,8 @@ namespace VPackage.Network.Demo
         {
             NetworkManager client = new NetworkManager("127.0.0.1", 4999, 14999, 14999);
             NetworkManager server = new NetworkManager("127.0.0.1", 14999, 4999, 4999);
+            client.UseFragmentation = true;
+            server.UseFragmentation = true;
             server.OnMessageReceived += (message) =>
             {
                 Console.WriteLine("Received: / {0} /", message);

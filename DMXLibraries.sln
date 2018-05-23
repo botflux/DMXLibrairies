@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2043
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DMXLibraries", "DMXLibraries\DMXLibraries.csproj", "{62004831-5388-40B9-82C8-3EEDA0B7AE3E}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -30,6 +30,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VPackage.Parser.Demo", "VPackage.Parser.Demo\VPackage.Parser.Demo.csproj", "{9899CE1C-78EA-4FDC-ADEA-D5D00DACCBF5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VPackage.Network.Demo", "VPackage.Network.Demo\VPackage.Network.Demo.csproj", "{3AE233CC-061B-450D-966C-A7EFA5E4D7D0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuspec", "Nuspec", "{59806C51-4C0C-4CC1-BAA0-5CF1C8D9A8B6}"
+	ProjectSection(SolutionItems) = preProject
+		Nuspec\nuget.exe = Nuspec\nuget.exe
+		Nuspec\Package.nuspec = Nuspec\Package.nuspec
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -11,7 +11,7 @@ namespace VPackage.Network
 {
     public class NetworkManager
     {
-        const int MTU = 1200;
+        const int MTU = 5;
 
         /// <summary>
         /// Client udp
@@ -31,6 +31,8 @@ namespace VPackage.Network
         private bool stopListening;
 
         private Queue<DatagramPacket> packetBuffer = new Queue<DatagramPacket>();
+
+        private bool useFragmentation = false;
 
         /// <summary>
         /// Renseigne ou renvoie le point de terminaison de reception
@@ -61,6 +63,22 @@ namespace VPackage.Network
             set
             {
                 sendEndPoint = value;
+            }
+        }
+
+        /// <summary>
+        /// Renseigne si le serveur doit prendre en charge la fragmentation lors de la reception.
+        /// </summary>
+        public bool UseFragmentation
+        {
+            get
+            {
+                return useFragmentation;
+            }
+
+            set
+            {
+                useFragmentation = value;
             }
         }
 
@@ -125,26 +143,32 @@ namespace VPackage.Network
             byte[] receiveBytes = u.EndReceive(ar, ref e);
             string receiveString = Encoding.ASCII.GetString(receiveBytes);
 
-            DatagramPacket p = JSONSerializer.Deserialize<DatagramPacket>(receiveString);
-            if (p.IsFragmented)
+            if (UseFragmentation)
             {
-                packetBuffer.Enqueue(p);
-
-                if (p.Index == p.PacketCount - 1)
+                DatagramPacket p = JSONSerializer.Deserialize<DatagramPacket>(receiveString);
+                if (p.IsFragmented)
                 {
-                    string fullMessage = "";
-                    while(packetBuffer.Count > 0)
+                    packetBuffer.Enqueue(p);
+
+                    if (p.Index == p.PacketCount - 1)
                     {
-                        fullMessage += packetBuffer.Dequeue().Data;
+                        string fullMessage = "";
+                        while (packetBuffer.Count > 0)
+                        {
+                            fullMessage += packetBuffer.Dequeue().Data;
+                        }
+                        OnMessageReceived?.Invoke(fullMessage);
                     }
-                    OnMessageReceived?.Invoke(fullMessage);
+                }
+                else
+                {
+                    OnMessageReceived?.Invoke(p.Data);
                 }
             }
             else
             {
-                OnMessageReceived?.Invoke(p.Data);
+                OnMessageReceived?.Invoke(receiveString);
             }
-
             //if (OnMessageReceived != null) OnMessageReceived(receiveString);
 
             if (!stopListening)
@@ -161,7 +185,7 @@ namespace VPackage.Network
             // si il reste des charactères restant il faut compter un nouveau paquet qui ne sera pas plein
             //packetCount += (lastPacketSize != 0) ? 1 : 0;
 
-            if (packetCount > 1)
+            if (packetCount > 1 || (packetCount == 1 && lastPacketSize != 0))
             {
                 List<string> buffer = new List<string>();
                 for (int i = 0; i < packetCount; i++)
