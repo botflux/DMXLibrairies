@@ -10,8 +10,9 @@ namespace VPackage.Network.Demo
     {
         static void Main(string[] args)
         {
-            NetworkManager client = new NetworkManager("127.0.0.1", 4999, 14999, 14999);
+            NetworkManager client = new NetworkManager("10.129.22.26", 5000, 15000, 15000);
             NetworkManager server = new NetworkManager("127.0.0.1", 14999, 4999, 4999);
+            client.Mtu = 500;
             client.UseFragmentation = true;
             server.UseFragmentation = true;
             server.OnMessageReceived += (message) =>

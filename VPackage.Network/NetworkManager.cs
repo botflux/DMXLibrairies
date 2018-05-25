@@ -11,7 +11,10 @@ namespace VPackage.Network
 {
     public class NetworkManager
     {
-        const int MTU = 5;
+        /// <summary>
+        /// Taille maximum des paquets
+        /// </summary>
+        private int mtu = 5;
 
         /// <summary>
         /// Client udp
@@ -79,6 +82,19 @@ namespace VPackage.Network
             set
             {
                 useFragmentation = value;
+            }
+        }
+
+        public int Mtu
+        {
+            get
+            {
+                return mtu;
+            }
+
+            set
+            {
+                mtu = value;
             }
         }
 
@@ -178,9 +194,9 @@ namespace VPackage.Network
         public void SendFragmented (string message)
         {
             // déduit le nombre de paquets qu'il y aura
-            int packetCount = message.Length / MTU;
+            int packetCount = message.Length / Mtu;
             // déduit le nombre de charactères restant
-            int lastPacketSize = message.Length % MTU;
+            int lastPacketSize = message.Length % Mtu;
 
             // si il reste des charactères restant il faut compter un nouveau paquet qui ne sera pas plein
             //packetCount += (lastPacketSize != 0) ? 1 : 0;
@@ -190,13 +206,13 @@ namespace VPackage.Network
                 List<string> buffer = new List<string>();
                 for (int i = 0; i < packetCount; i++)
                 {
-                    int start = i * MTU;
-                    int length = MTU;
+                    int start = i * Mtu;
+                    int length = Mtu;
 
                     buffer.Add(message.Substring(start, length));
                 }
 
-                buffer.Add(message.Substring(MTU * packetCount, message.Length - (MTU * packetCount)));
+                buffer.Add(message.Substring(Mtu * packetCount, message.Length - (Mtu * packetCount)));
                 // ajoute le packet restant si il y a un reste
                 packetCount += (lastPacketSize != 0) ? 1 : 0;
 
@@ -214,6 +230,7 @@ namespace VPackage.Network
                     byte[] bs = Encoding.ASCII.GetBytes(json);
                     int bc = bs.Length;
                     udpClient.Send(bs, bc, sendEndPoint);
+                    Console.WriteLine(json);
                 }
                 
             }
